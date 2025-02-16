@@ -1,11 +1,11 @@
 import logging
 
 import flask
-from flask import request
+from flask import request, jsonify
 from terra.base_client import Terra
 
 from datetime import datetime, timedelta
-from fastapi import FastAPI, HTTPException, Request
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -20,7 +20,7 @@ api_key = 'MIOWk0xEIQPMsVDM7UBbUEerTcyo72jq'
 
 terra = Terra(api_key=api_key, dev_id=dev_id, secret=webhook_secret)
 
-@app.route("/consumeTerraWebhook",methods=['POST'])
+@app.route("/consumeTerraWebhook",methods=['GET'])
 def consume_terra_webhook():
     body = request.get_json()
 
@@ -107,6 +107,51 @@ def webhook_handler():
         return {"message": "User data fetched successfully", "data": results}
 
     return {"message": "Webhook type or status did not match criteria", "received_payload": payload}
+
+
+@app.route('/get_menstrual_data/<user_id>', methods=['GET'])
+def get_menstrual_data(user_id):
+    # Calculate date range: past 28 days up to today
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(days=28)
+
+    headers = {
+        "x-api-key": api_key,
+        "dev-id": dev_id
+    }
+
+    try:
+        response = requests.get(
+            f"https://api.tryterra.co/v2/menstruation",
+            headers=headers,
+            params={
+                "user_id": user_id,
+                "start_date": start_date.strftime('%Y-%m-%d'),
+                "end_date": end_date.strftime('%Y-%m-%d'),
+                "to_webhook": False
+            },
+            timeout=10
+        )
+        response.raise_for_status()
+        menstrual_data = response.json()
+
+        # Process the data to extract relevant information
+        processed_data = []
+        for day in menstrual_data.get('data', []):
+            processed_data.append({
+                'date': day['metadata']['start_time'][:10],
+                'phase': day['menstruation'].get('phase'),
+                'flow': day['menstruation'].get('flow')
+            })
+
+        return jsonify({
+            "message": "Menstrual data fetched successfully",
+            "data": processed_data
+        })
+
+    except requests.exceptions.RequestException as e:
+        _LOGGER.error(f"Error fetching menstrual data: {str(e)}")
+        return jsonify({"error": "Failed to fetch menstrual data"}), 500
 
 
 if __name__ == "__main__":
