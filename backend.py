@@ -21,9 +21,30 @@ terra = Terra(api_key=api_key, dev_id=dev_id, secret=webhook_secret)
 def consume_terra_webhook():
     body = request.get_json()
 
+    verified = check_terra_signature(request.data.decode("utf-8"), request.headers['terra-signature'])
+
+    if not verified:
+        _LOGGER.info('NO')
+        return flask.Response(status=403)
+
     _LOGGER.info("Received Terra Webhook: %s", body)
 
     return flask.Response(status=200)
+
+@app.route('/authenticate', methods=['GET'])
+def authenticate():
+    #return terra.generate_widget_session(providers = ['CLUE','OURA'], reference_id = '1234').get_json()
+    widget_response = terra.generate_widget_session(providers = ['CLUE','OURA'], reference_id = '1234')
+    widget_url = widget_response.get_json()['url']
+    return flask.Response(f"""
+    <html>
+        <body>
+            <button onclick="window.location.href='{widget_url}';">
+                Authenticate with Oura
+            </button>
+        </body>
+    </html>
+    """, mimetype="text/html")
 
 if __name__ == "__main__":
     app.run()
