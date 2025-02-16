@@ -1,0 +1,92 @@
+Metadata-Version: 2.3
+Name: terra-python
+Version: 0.0.17
+Summary: A python wrapper for the Terra API.
+Author-email: Terra Enabling Developers <dev@tryterra.co>
+Requires-Python: >=3.8.0
+Description-Content-Type: text/markdown
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: Apache Software License
+Requires-Dist: requests>=2.31.0, <3
+Requires-Dist: nox==2024.4.15 ; extra == "dev"
+Requires-Dist: ruff==0.6.2 ; extra == "dev-format"
+Requires-Dist: flit==3.9.0 ; extra == "dev-release"
+Requires-Dist: pytest>=8.3.2, <9 ; extra == "dev-test"
+Requires-Dist: pytest-randomly>=3.15.0, <4 ; extra == "dev-test"
+Requires-Dist: pyright==1.1.378 ; extra == "dev-typecheck"
+Project-URL: Homepage, https://github.com/tryterra/terra-client-python
+Provides-Extra: dev
+Provides-Extra: dev-format
+Provides-Extra: dev-release
+Provides-Extra: dev-test
+Provides-Extra: dev-typecheck
+
+[![GitHub license](https://img.shields.io/github/license/tryterra/terra-client-python)](https://github.com/tryterra/terra-client-python/blob/master/LICENSE)
+[![docs](https://github.com/tryterra/terra-client-java/actions/workflows/docs.yml/badge.svg)](https://tryterra.github.io/terra-client-python/)
+
+# Terra Python Package
+
+A wrapper in python for the Terra endpoints and models.
+
+User Guide: https://docs.tryterra.co/docs/python-project-1
+
+
+Install using
+
+```sh
+pip install terra-python
+```
+
+Then import the `Terra` class from terra.base_client
+
+Initialise a new Terra instance with:
+
+```py
+from terra.base_client import Terra
+
+# For user authentication
+terra = Terra(api_key='YOUR API KEY', dev_id='YOUR DEV ID');
+
+# For web hook endpoints
+terra = Terra(api_key='YOUR API KEY', dev_id='YOUR DEV ID', secret='YOUR TERRA SECRET');
+```
+
+Now you can call the following functions from the instance:
+
+- `from_user_id`
+- `get_activity_for_user`
+- `get_body_for_user`
+- `get_daily_for_user`
+- `get_sleep_for_user`
+- `get_athlete_for_user`
+- `get_menstruation_for_user`
+- `get_nutrition_for_user`
+- `generate_widget_session`
+- `generate_authentication_url`
+- `get_user_info`
+- `deauthenticate_user`
+- `list_users`
+- `list_providers`
+- `check_terra_signature`
+- `handle_flask_webhooks`
+- `handle_webhooks`
+
+The documentation for the wrapper is available here: https://tryterra.github.io/terra-client-python/
+
+In addition, all the data models documented on [https://docs.tryterra.co/docs/data-models] are available to import and use.
+
+The models support autocompleting the types to manipulate data coming from Terra
+
